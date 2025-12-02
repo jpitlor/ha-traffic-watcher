@@ -1,6 +1,7 @@
 {
   "domain": "traffic_watcher",
   "name": "Traffic Watcher",
+  "version": "0.0.1",
   "documentation": "https://github.com/jpitlor/traffic-watcher",
   "issue_tracker": "https://github.com/jpitlor/traffic-watcher/issues",
   "dependencies": [],

@@ -25,12 +25,14 @@ class TrafficWatcherApiClient:
 
     async def async_get_data(self) -> dict:
         """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
+        # url = "https://jsonplaceholder.typicode.com/posts/1"
+        url = "http://host.docker.internal:8080/foo/bar"
         return await self.api_wrapper("get", url)
 
     async def async_set_title(self, value: str) -> None:
         """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
+        # url = "https://jsonplaceholder.typicode.com/posts/1"
+        url = "http://host.docker.internal:8080/foo/bar"
         await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
 
     async def api_wrapper(
@@ -38,7 +40,7 @@ class TrafficWatcherApiClient:
     ) -> dict:
         """Get information from the API."""
         try:
-            async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
+            async with async_timeout.timeout(TIMEOUT):
                 if method == "get":
                     response = await self._session.get(url, headers=headers)
                     return await response.json()
