@@ -5,8 +5,11 @@
         "title": "Traffic Watcher",
         "description": "If you need help with the configuration have a look here: https://github.com/jpitlor/traffic-watcher",
         "data": {
-          "username": "Username",
-          "password": "Password"
+          "person": "Person to track",
+          "home": "Home",
+          "work": "Work",
+          "schedule": "Schedule the person is in the office",
+          "api_key": "Google Maps API key"
         }
       }
     },

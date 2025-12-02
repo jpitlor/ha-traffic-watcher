@@ -17,11 +17,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .api import TrafficWatcherApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
-from .const import DOMAIN
-from .const import PLATFORMS
-from .const import STARTUP_MESSAGE
+from .const import CONF_API_KEY, DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
@@ -39,11 +35,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
-
+    api_key = entry.data.get(CONF_API_KEY)
     session = async_get_clientsession(hass)
-    client = TrafficWatcherApiClient(username, password, session)
+    client = TrafficWatcherApiClient(api_key, session)
 
     coordinator = TrafficWatcherDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()

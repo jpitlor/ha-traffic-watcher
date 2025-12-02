@@ -23,8 +23,11 @@ PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
 
 # Configuration and options
 CONF_ENABLED = "enabled"
-CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
+CONF_PERSON = "person"
+CONF_HOME = "home"
+CONF_WORK = "work"
+CONF_SCHEDULE = "schedule"
+CONF_API_KEY = "api_key"
 
 # Defaults
 DEFAULT_NAME = DOMAIN

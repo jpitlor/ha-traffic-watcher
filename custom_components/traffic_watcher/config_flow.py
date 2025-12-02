@@ -3,12 +3,10 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.selector import selector
 
 from .api import TrafficWatcherApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
-from .const import DOMAIN
-from .const import PLATFORMS
+from .const import CONF_PERSON, CONF_HOME, CONF_WORK, CONF_SCHEDULE, DOMAIN, PLATFORMS, CONF_API_KEY
 
 
 class TrafficWatcherFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -25,18 +23,10 @@ class TrafficWatcherFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user."""
         self._errors = {}
 
-        # Uncomment the next 2 lines if only a single instance of the integration is allowed:
-        # if self._async_current_entries():
-        #     return self.async_abort(reason="single_instance_allowed")
-
         if user_input is not None:
-            valid = await self._test_credentials(
-                user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
-            )
+            valid = await self._test_credentials(user_input[CONF_API_KEY])
             if valid:
-                return self.async_create_entry(
-                    title=user_input[CONF_USERNAME], data=user_input
-                )
+                return self.async_create_entry(title=user_input[CONF_PERSON], data=user_input)
             else:
                 self._errors["base"] = "auth"
 
@@ -53,17 +43,36 @@ class TrafficWatcherFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_PERSON): selector({
+                    "entity": {
+                        "filter": { "integration": "person" }
+                    }
+                }),
+                vol.Required(CONF_HOME): selector({
+                    "entity": {
+                        "filter": { "integration": "zone" }
+                    }
+                }),
+                vol.Required(CONF_WORK): selector({
+                    "entity": {
+                        "filter": { "integration": "zone" }
+                    }
+                }),
+                vol.Required(CONF_SCHEDULE): selector({
+                    "entity": {
+                        "filter": { "integration": "schedule" }
+                    }
+                }),
+            }),
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password):
+    async def _test_credentials(self, api_key):
         """Return true if credentials is valid."""
         try:
             session = async_create_clientsession(self.hass)
-            client = TrafficWatcherApiClient(username, password, session)
+            client = TrafficWatcherApiClient(api_key, session)
             await client.async_get_data()
             return True
         except Exception:  # pylint: disable=broad-except
@@ -102,5 +111,5 @@ class TrafficWatcherOptionsFlowHandler(config_entries.OptionsFlow):
     async def _update_options(self):
         """Update config entry options."""
         return self.async_create_entry(
-            title=self.config_entry.data.get(CONF_USERNAME), data=self.options
+            title=self.config_entry.data.get(CONF_PERSON), data=self.options
         )
