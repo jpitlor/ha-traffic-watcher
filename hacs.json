@@ -1,0 +1,7 @@
+{
+  "name": "Traffic Watcher",
+  "hacs": "2.0.5",
+  "domains": ["binary_sensor", "sensor", "switch"],
+  "iot_class": "Cloud Polling",
+  "homeassistant": "2025.11.1"
+}

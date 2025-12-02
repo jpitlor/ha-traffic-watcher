@@ -1,0 +1,13 @@
+{
+  "_checkout": "2021.1.1",
+  "_output_dir": "/Users/jpitlor/Code",
+  "_repo_dir": "/Users/jpitlor/.cookiecutters/cookiecutter-homeassistant-custom-component",
+  "_template": "gh:oncleben31/cookiecutter-homeassistant-custom-component",
+  "class_name_prefix": "TrafficWatcher",
+  "domain_name": "traffic_watcher",
+  "friendly_name": "Traffic Watcher",
+  "github_user": "jpitlor",
+  "project_name": "traffic-watcher",
+  "test_suite": "yes",
+  "version": "0.0.1"
+}
