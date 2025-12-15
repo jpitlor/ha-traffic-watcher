@@ -1,76 +1,26 @@
-"""Sample API Client."""
-import asyncio
+import json
 import logging
-import socket
+from datetime import timedelta
 
-import aiohttp
-import async_timeout
+from google.oauth2 import service_account
+from google.maps.routing_v2 import RoutesClient
 
 TIMEOUT = 10
-
-
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
 HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 
+class RoutesResult:
+    route: list[str]
+    duration: timedelta
+
+
 class TrafficWatcherApiClient:
-    def __init__(
-        self, api_key: str, session: aiohttp.ClientSession
-    ) -> None:
-        """Sample API Client."""
-        self._api_key = api_key
-        self._session = session
+    def __init__(self, api_key: str) -> None:
+        json_acct_info = json.loads(api_key)
+        credentials = service_account.Credentials.from_service_account_info(json_acct_info)
+        self.client = RoutesClient(credentials=credentials)
 
-    async def async_get_data(self) -> dict:
-        """Get data from the API."""
-        # url = "https://jsonplaceholder.typicode.com/posts/1"
-        url = "http://host.docker.internal:8080/foo/bar"
-        return await self.api_wrapper("get", url)
-
-    async def async_set_title(self, value: str) -> None:
-        """Get data from the API."""
-        # url = "https://jsonplaceholder.typicode.com/posts/1"
-        url = "http://host.docker.internal:8080/foo/bar"
-        await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
-
-    async def api_wrapper(
-        self, method: str, url: str, data: dict = {}, headers: dict = {}
-    ) -> dict:
-        """Get information from the API."""
-        try:
-            async with async_timeout.timeout(TIMEOUT):
-                if method == "get":
-                    response = await self._session.get(url, headers=headers)
-                    return await response.json()
-
-                elif method == "put":
-                    await self._session.put(url, headers=headers, json=data)
-
-                elif method == "patch":
-                    await self._session.patch(url, headers=headers, json=data)
-
-                elif method == "post":
-                    await self._session.post(url, headers=headers, json=data)
-
-        except asyncio.TimeoutError as exception:
-            _LOGGER.error(
-                "Timeout error fetching information from %s - %s",
-                url,
-                exception,
-            )
-
-        except (KeyError, TypeError) as exception:
-            _LOGGER.error(
-                "Error parsing information from %s - %s",
-                url,
-                exception,
-            )
-        except (aiohttp.ClientError, socket.gaierror) as exception:
-            _LOGGER.error(
-                "Error fetching information from %s - %s",
-                url,
-                exception,
-            )
-        except Exception as exception:  # pylint: disable=broad-except
-            _LOGGER.error("Something really wrong happened! - %s", exception)
+    async def get_current_route(self, from_address: str, to_address: str) -> RoutesResult:
+        x = self.client.compute_routes()
+        x.routes.pop(

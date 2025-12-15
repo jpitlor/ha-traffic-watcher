@@ -8,26 +8,26 @@ VERSION = "0.0.1"
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/jpitlor/traffic-watcher/issues"
 
-# Icons
-ICON = "mdi:format-quote-close"
-
-# Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
-
 # Platforms
-BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
-PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
-
+PLATFORMS = [SENSOR, SWITCH]
 
 # Configuration and options
-CONF_ENABLED = "enabled"
 CONF_PERSON = "person"
+CONF_PHONE = "phone"
 CONF_HOME = "home"
 CONF_WORK = "work"
 CONF_SCHEDULE = "schedule"
 CONF_API_KEY = "api_key"
+
+# Data
+DATA_USUAL_ROUTE = "usual_route"
+DATA_CURRENT_ROUTE = "current_route"
+DATA_USUAL_ROUTE_TIME = "usual_route_time"
+DATA_CURRENT_ROUTE_TIME = "current_route_time"
+DATA_MONTHLY_API_CALLS = "monthly_api_calls"
+DATA_LAUNCH_MAPS = "launch_maps"
 
 # Defaults
 DEFAULT_NAME = DOMAIN

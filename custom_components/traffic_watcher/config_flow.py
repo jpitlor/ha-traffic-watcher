@@ -6,7 +6,7 @@ from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.selector import selector
 
 from .api import TrafficWatcherApiClient
-from .const import CONF_PERSON, CONF_HOME, CONF_WORK, CONF_SCHEDULE, DOMAIN, PLATFORMS, CONF_API_KEY
+from .const import CONF_PERSON, CONF_HOME, CONF_WORK, CONF_SCHEDULE, DOMAIN, PLATFORMS, CONF_API_KEY, NAME
 
 
 class TrafficWatcherFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -26,7 +26,7 @@ class TrafficWatcherFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             valid = await self._test_credentials(user_input[CONF_API_KEY])
             if valid:
-                return self.async_create_entry(title=user_input[CONF_PERSON], data=user_input)
+                return self.async_create_entry(title=NAME, data=user_input)
             else:
                 self._errors["base"] = "auth"
 
@@ -64,6 +64,7 @@ class TrafficWatcherFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         "filter": { "integration": "schedule" }
                     }
                 }),
+                vol.Required(CONF_API_KEY): str
             }),
             errors=self._errors,
         )

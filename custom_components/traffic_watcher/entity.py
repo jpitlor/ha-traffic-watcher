@@ -1,10 +1,11 @@
 """TrafficWatcherEntity class"""
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import slugify
 
-from .const import ATTRIBUTION
+from .const import ATTRIBUTION, CONF_PERSON
 from .const import DOMAIN
-from .const import NAME
-from .const import VERSION
+from . import _LOGGER
 
 
 class TrafficWatcherEntity(CoordinatorEntity):
@@ -14,17 +15,17 @@ class TrafficWatcherEntity(CoordinatorEntity):
 
     @property
     def unique_id(self):
-        """Return a unique ID to use for this entity."""
-        return self.config_entry.entry_id
+        return f"{DOMAIN}_{slugify(self.name)}"
 
     @property
     def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "name": NAME,
-            "model": VERSION,
-            "manufacturer": NAME,
-        }
+        return DeviceInfo(
+            identifiers={
+                (DOMAIN, self.person_name),
+            },
+            name=self.person_name,
+            entry_type=DeviceEntryType.SERVICE,
+        )
 
     @property
     def device_state_attributes(self):
@@ -34,3 +35,9 @@ class TrafficWatcherEntity(CoordinatorEntity):
             "id": str(self.coordinator.data.get("id")),
             "integration": DOMAIN,
         }
+
+    @property
+    def person_name(self):
+        person_entity = self.config_entry.data.get(CONF_PERSON)
+        _LOGGER.warning(self.hass.states.get(person_entity).attributes)
+        return self.hass.states.get(person_entity).attributes["friendly_name"]
