@@ -5,6 +5,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.selector import selector
 
+from . import CONF_SERVICE_ACCOUNT_JSON
 from .api import TrafficWatcherApiClient
 from .const import CONF_PERSON, CONF_HOME, CONF_WORK, CONF_SCHEDULE, DOMAIN, PLATFORMS, CONF_API_KEY, NAME
 
@@ -64,17 +65,20 @@ class TrafficWatcherFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         "filter": { "integration": "schedule" }
                     }
                 }),
-                vol.Required(CONF_API_KEY): str
+                vol.Required(CONF_API_KEY): str,
+                vol.Required(CONF_SERVICE_ACCOUNT_JSON): str
             }),
             errors=self._errors,
         )
 
-    async def _test_credentials(self, api_key):
+    @staticmethod
+    async def _test_credentials(api_key: str, service_account_json: str):
         """Return true if credentials is valid."""
         try:
-            session = async_create_clientsession(self.hass)
-            client = TrafficWatcherApiClient(api_key, session)
-            await client.async_get_data()
+            client = TrafficWatcherApiClient(api_key, service_account_json)
+            nabu_casa_address = "15 Hubble Suite 200, Irvine, CA 92618"
+            sna_address = "18601 Airport Way, Santa Ana, CA 92707"
+            await client.get_current_route(nabu_casa_address, sna_address)
             return True
         except Exception:  # pylint: disable=broad-except
             pass

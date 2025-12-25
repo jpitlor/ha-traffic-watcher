@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .api import TrafficWatcherApiClient
 from .const import CONF_API_KEY, DOMAIN, PLATFORMS, STARTUP_MESSAGE, DATA_LAUNCH_MAPS, DATA_MONTHLY_API_CALLS, \
-    DATA_USUAL_ROUTE, DATA_CURRENT_ROUTE, DATA_USUAL_ROUTE_TIME, DATA_CURRENT_ROUTE_TIME
+    DATA_USUAL_ROUTE, DATA_CURRENT_ROUTE, DATA_USUAL_ROUTE_TIME, DATA_CURRENT_ROUTE_TIME, CONF_SERVICE_ACCOUNT_JSON
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
@@ -38,9 +38,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.info(STARTUP_MESSAGE)
 
     api_key = entry.data.get(CONF_API_KEY)
-    client = TrafficWatcherApiClient(api_key)
+    service_account_json = entry.data.get(CONF_SERVICE_ACCOUNT_JSON)
+    client = TrafficWatcherApiClient(api_key, service_account_json)
 
-    coordinator = TrafficWatcherDataUpdateCoordinator(hass, client=client)
+    coordinator = TrafficWatcherDataUpdateCoordinator(hass, api_client=client)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -60,10 +61,10 @@ class TrafficWatcherDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(
         self,
         hass: HomeAssistant,
-        client: TrafficWatcherApiClient,
+        api_client: TrafficWatcherApiClient,
     ) -> None:
         """Initialize."""
-        self.api = client
+        self.api_client = api_client
         self.platforms = []
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL, update_method=self._update_data)
@@ -71,6 +72,7 @@ class TrafficWatcherDataUpdateCoordinator(DataUpdateCoordinator):
     async def _update_data(self):
         try:
             result = self.data if self.data is not None else _DEFAULT_STATE
+            # api_response = await self.api_client.get_current_route()
             # TODO: fetch data from google
             return result
         except Exception as exception:

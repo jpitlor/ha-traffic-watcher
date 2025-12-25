@@ -58,7 +58,7 @@ class CurrentRouteSensor(TrafficWatcherEntity):
 class UsualRouteTimeSensor(TrafficWatcherEntity):
     @property
     def name(self):
-        return f"{self.person_name} Usual Route"
+        return f"{self.person_name} Usual Route Time"
 
     @property
     def state(self):

@@ -1,3 +1,4 @@
 homeassistant
+googlemaps
 google-maps-routing
 google-api-core
